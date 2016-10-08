@@ -2,6 +2,21 @@
     (println "AUTHOR: Thomas Willingham twillingham@crimson.ua.edu")
     )
 
+(define (iterator # $x items $)
+    (define (f) 
+        (lambda (x)
+            (while (valid? $)
+                   (car $)
+                   )
+            )
+        )
+    )
+
+
+
+
+
+
 (define (run1)
   )
 
