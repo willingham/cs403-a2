@@ -60,6 +60,33 @@
         )
     )
 
+(define (enqueue q x)
+    (cons q x)
+    )
+
+(define (dequeue q)
+    (if (null? q)
+        '()
+        (cdr q)
+        )
+    )
+
+(define (qpeek)
+    (if (null? q)
+        '()
+        (car q)
+        )
+    )
+
+(define (qsize q)
+    (if (null? q)
+        0
+        (length q)
+        )
+    )
+
+
+  
 (define (run1)
   )
 
