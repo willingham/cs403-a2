@@ -32,6 +32,10 @@
 
 (for-loop 1  (list (lambda (x) (inspect x))) (list ))
 
+(define (Stack) 
+    (list )
+    )
+
 (define (push s x)
     (if (null? s)
         (list x)
@@ -60,29 +64,33 @@
         )
     )
 
+(define (Queue)
+    (list (Stack) (Stack))
+    )
+
 (define (enqueue q x)
-    (cons q x)
+    (list (car q) (push x (cadr q)))
     )
 
 (define (dequeue q)
-    (if (null? q)
-        '()
-        (cdr q)
+    (if (null? (cadr q))
+        (list (pop (car q)) (cadr q))
+        (dequeue (list (cons (peek (cadr q)) (car q)) (pop (cadr q))))
+        
+        ;(list (car q) (cdr (cadr q)))
+        ;(dequeue (list (cdr (car q)) (cons (car (car q)) (cdr q))
         )
     )
 
 (define (qpeek)
-    (if (null? q)
-        '()
-        (car q)
+    (if (null? (cadr q))
+        (speek (car q))
+        (speek (cadr q))
         )
     )
 
 (define (qsize q)
-    (if (null? q)
-        0
-        (length q)
-        )
+    (+ (ssize (car q)) (ssize (cadr q)))
     )
 
 
@@ -94,6 +102,35 @@
   )
 
 (define (run3)
+    (define (loop stack queue)
+        (define x (readInt))
+        (if (eof?)
+            (list stack queue)
+            (loop (push stack x) (enqueue queue x))
+            )
+        )
+    (define (popper s)
+        (cond
+            ((!= (ssize s) 0)
+                (inspect (speek s))
+                (popper (pop s))
+                )
+            )
+        )
+    (define (dequeuer q)
+        (cond
+            ((!= (qsize q) 0)
+                (inspect (speek q))
+                (dequeuer (dequeue q))
+                )
+            )
+        )
+
+    (define oldstream (setPort (open "data.ints" 'read)))
+    (define data (loop (Stack) (Queue)))
+    (popper (car data))
+    (dequeuer (cadr data))
+    (setPort oldStream)
   )
 
 (define (run4)
@@ -116,3 +153,4 @@
 
 (define (run10)
   )
+
