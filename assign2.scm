@@ -2,7 +2,7 @@
     (println "AUTHOR: Thomas Willingham twillingham@crimson.ua.edu")
     )
 
-(define (iterator # $x items $)
+(define (iterate # $x items $)
     (define (join holder items $)
         (if (valid? car(x)))
             
@@ -31,6 +31,13 @@
 
 
 (for-loop 1  (list (lambda (x) (inspect x))) (list ))
+
+
+;;; two
+
+(define (peval f $))
+
+;;; three
 
 (define (Stack) 
     (list )
@@ -90,7 +97,54 @@
     (+ (ssize (car q)) (ssize (cadr q)))
     )
 
+;;; four
 
+(define (no-locals x))
+
+;;; five
+
+(define prefn
+    (lambda (f)
+        (lambda (p)
+            (cons #f
+                  (if (car p)
+                        (cdr p)
+                        (f (cdr p))
+                        )
+                  )
+            )
+        )
+    )
+
+(define pre
+    (lambda (n)
+        (lambda (f x) 
+            (cdr (n (prefn f) (cons #t x)))
+            )
+        )
+    )
+
+;;; six
+
+(define (treedepth))
+
+;;; sept
+
+(define (queens))
+
+;;; huit
+
+(define (cxr))
+
+;;; neuf
+
+(define (apply-generic))
+
+;;; dix
+
+(define (coerce))
+
+;;; run functions
   
 (define (run1)
     )
