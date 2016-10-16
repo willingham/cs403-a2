@@ -69,23 +69,20 @@
     )
 
 (define (enqueue q x)
-    (list (car q) (push x (cadr q)))
+    (list (car q) (push (cadr q) x))
     )
 
 (define (dequeue q)
     (if (null? (cadr q))
         (list (pop (car q)) (cadr q))
-        (dequeue (list (cons (peek (cadr q)) (car q)) (pop (cadr q))))
-        
-        ;(list (car q) (cdr (cadr q)))
-        ;(dequeue (list (cdr (car q)) (cons (car (car q)) (cdr q))
+        (dequeue (list (cons (speek (cadr q)) (car q)) (pop (cadr q))))
         )
     )
 
-(define (qpeek)
+(define (qpeek q)
     (if (null? (cadr q))
         (speek (car q))
-        (speek (cadr q))
+        (qpeek (list (cons (speek (cadr q)) (car q)) (pop (cadr q))))
         )
     )
 
@@ -96,7 +93,7 @@
 
   
 (define (run1)
-  )
+    )
 
 (define (run2)
   )
@@ -120,7 +117,7 @@
     (define (dequeuer q)
         (cond
             ((!= (qsize q) 0)
-                (inspect (speek q))
+                (inspect (qpeek q))
                 (dequeuer (dequeue q))
                 )
             )
@@ -130,7 +127,7 @@
     (define data (loop (Stack) (Queue)))
     (popper (car data))
     (dequeuer (cadr data))
-    (setPort oldStream)
+    (setPort oldstream)
   )
 
 (define (run4)
@@ -154,3 +151,4 @@
 (define (run10)
   )
 
+(println "assignment 2 loaded")
