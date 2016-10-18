@@ -20,27 +20,12 @@
 	(map y items)
     )
 
-
-(define (for-loop arglist procedure)
-  (cond
-    ((null? arglist) nil)
-    (else (begin
-      (procedure (car arglist))
-      (for-loop (cdr arglist) procedure)
-      ))
+(define (run1)
+    (iterate i (list 1 2 3 4)
+        (inspect i)
+        (inspect (* i i))
+        )
     )
-  )
-
-(define (for-loop arg procedureList finalList)
-  (cond
-    ((null? procedureList) (println finalList))
-    (else (begin
-      (for-loop arg (cdr procedureList) (cons arg (car procedureList)))
-      ))
-    )
-  )
-
-(for-loop 1  (list (lambda (x) (inspect x))) (list ))
 
 ;;; deaux
 
@@ -65,6 +50,20 @@
     (lambda (@)  (apply f  (reverse (listIt at @ ()))))
    
 	)
+
+(define (run2)
+	(define a 1)
+	(define b 2)
+	(define c 3)
+    (define . 'MISSING)
+    (define (f x y z) (+ x y z))
+    (exprTest (f a b c) 6)
+    (exprTest ((peval f . . .) a b c) 6)
+    (exprTest ((peval f . b .) a c) 6)
+    (exprTest ((peval f . . c) a b) 6)
+    (exprTest ((peval f a . c) b) 6)
+    (exprTest ((peval f a b c)) 6)
+    )
 		
 ;;; trois
 
@@ -128,7 +127,32 @@
 
 ;;; quatre
 
-(define (no-locals x))
+(define (no-locals orig)
+    (define (iter curr params args)
+        (define spot (car curr))
+        (if (list? spot)
+            (if (== (car spot) 'define)
+                (if (== (length params) 0)
+                    (if (== (length args) 0)
+                        (iter (cdr curr) (list (cadr spot)) (list (caddr spot)))
+                        (iter (cdr curr) (list (cadr spot)) (append args (list (caddr spot))))
+                    )
+                    (if (== (length args) 0)
+                        (iter (cdr curr) (append params (list (cadr spot))) (list (caddr spot)))
+                        (iter (cdr curr) (append params (list (cadr spot))) (append args (list (caddr spot))))
+                    )
+                )
+                (append (list (list 'lambda params spot)) args)
+            )
+            (append (list (list 'lambda params spot)) args)
+        )
+    )
+    (list (car orig) (cadr orig) (iter (cddr orig) '() '()))
+)
+
+(define (run4)
+   	(exprTest (no-locals (quote (define (nsq a) (define x (+ a 1)) (* x x)))) '(define (nsq a) ((lambda (x) (* x x)) (+ a 1))))
+	) 
 
 ;;; cinq
 
@@ -215,15 +239,6 @@
 
 (define (coerce n x))
 
-;;; run functions
-  
-(define (run1)
-    )
-
-(define (run2)
-	(define (f x y z) (+ x y z))
-  	(exprTest ((((peval f) 1) 2) 3) 6)
-	)
 
 (define (run3)
     (define (loop stack queue)
@@ -257,8 +272,6 @@
     (setPort oldstream)
   )
 
-(define (run4)
-  )
 
 (define (run5)
   )
