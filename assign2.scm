@@ -2,12 +2,24 @@
     (println "AUTHOR: Thomas Willingham twillingham@crimson.ua.edu")
     )
 
-(define (iterate # $x items $)
-    (define (join holder items $)
-        (if (valid? car(x)))
-            
+(define (exprTest # $expr target)
+    (define result (catch (eval $expr #)))
+        (if (error? result)
+            (println $expr " is EXCEPTION: " (result 'value)
+                " (it should be " target ")")
+            (println $expr " is " result
+                " (it should be " target ")")
+            )
         )
+
+
+;;; un
+
+(define (iterate # $x items $)
+	(define y  (eval (list 'lambda  (list $x) (cons 'begin $)) #))
+	(map y items)
     )
+
 
 (define (for-loop arglist procedure)
   (cond
@@ -28,16 +40,33 @@
     )
   )
 
-
-
 (for-loop 1  (list (lambda (x) (inspect x))) (list ))
 
+;;; deaux
 
-;;; two
-
-(define (peval f $))
-
-;;; three
+(define (peval f @)
+    (define at @)
+	(define (listIt x y z)
+		(cond
+			((and (null? x) (null? y))
+				z
+				)
+			((null? x)
+				(listIt x (cdr y) (cons (car y) z))
+				)
+			((equal? (car x) 'MISSING)
+				(listIt (cdr x) (cdr y) (cons (car y) z))
+				)
+            (else
+                (listIt (cdr x) y (cons (car x) z))
+                )
+			)
+		)   
+    (lambda (@)  (apply f  (reverse (listIt at @ ()))))
+   
+	)
+		
+;;; trois
 
 (define (Stack) 
     (list )
@@ -46,8 +75,8 @@
 (define (push s x)
     (if (null? s)
         (list x)
-        (append (list x) s)
-        )
+        (cons x s)
+		)
     )
 
 (define (pop s)
@@ -97,11 +126,11 @@
     (+ (ssize (car q)) (ssize (cadr q)))
     )
 
-;;; four
+;;; quatre
 
 (define (no-locals x))
 
-;;; five
+;;; cinq
 
 (define prefn
     (lambda (f)
@@ -116,33 +145,75 @@
         )
     )
 
-(define pre
+(define pred
     (lambda (n)
-        (lambda (f x) 
-            (cdr (n (prefn f) (cons #t x)))
+        (lambda (f)
+            (lambda (x) 
+                (cdr ((n (prefn f)) (cons #t x)))
+                )
             )
         )
     )
-
+        
 ;;; six
 
-(define (treedepth))
+(define (treeNode value left right)
+    (list value left right)
+    )
+
+(define (treeflatten t))
+
+
+(define (treedepth t))
 
 ;;; sept
 
-(define (queens))
+(define (queens n))
 
 ;;; huit
 
-(define (cxr))
+(define (cxr x)
+    (lambda (y)
+        )
+    )
 
 ;;; neuf
+
+(define old+ +)
+    (define old- -)
+    (define old* *)
+    (define old/ /)
+    (define (install-generic)
+        (clearTable)
+        (set! + (lambda (a b) (apply-generic '+ a b)))
+        (set! - (lambda (a b) (apply-generic '- a b)))
+        (set! * (lambda (a b) (apply-generic '* a b)))
+        (set! / (lambda (a b) (apply-generic '/ a b)))
+        (putTable '+ '(STRING STRING) addStrings)
+        (putTable '* '(STRING INTEGER) mulStringInteger)
+        ;other functions installed here
+        'generic-system-installed
+        )
+
+(define (install-generic)
+	)
+
+(define (uninstall-generic)
+        (set! + old+)
+        (set! - old-)
+        (set! * old*)
+        (set! / old/)
+        'generic-system-uninstalled
+        )
 
 (define (apply-generic))
 
 ;;; dix
 
-(define (coerce))
+(define (install-coercion)
+	)
+
+(define (coerce n x))
 
 ;;; run functions
   
@@ -150,7 +221,9 @@
     )
 
 (define (run2)
-  )
+	(define (f x y z) (+ x y z))
+  	(exprTest ((((peval f) 1) 2) 3) 6)
+	)
 
 (define (run3)
     (define (loop stack queue)
