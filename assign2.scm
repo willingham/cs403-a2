@@ -68,35 +68,32 @@
 ;;; trois
 
 (define (Stack) 
-    (list )
+    (list (list ) 0)
     )
 
 (define (push s x)
     (if (null? s)
-        (list x)
-        (cons x s)
+        (list (list x) (+ (cadr x) 1))
+        (list (cons x (car s)) (+ (cadr s) 1))
 		)
     )
 
 (define (pop s)
-    (if (null? s)
-        '()
-        (cdr s)
+    (if (equal? (ssize s) 0)
+        s
+        (list (cdr (car s)) (- (cadr s) 1))
         )
     )
 
 (define (speek s)
     (if (null? s)
-        '()
-        (car s)
+        s
+        (caar s)
         )
     )
 
 (define (ssize s)
-    (if (null? s)
-        0
-        (length s)
-        )
+        (cadr s)
     )
 
 (define (Queue)
@@ -108,16 +105,16 @@
     )
 
 (define (dequeue q)
-    (if (null? (cadr q))
+    (if (null? (car (cadr q)))
         (list (pop (car q)) (cadr q))
-        (dequeue (list (cons (speek (cadr q)) (car q)) (pop (cadr q))))
+        (dequeue (list (push (car q) (speek (cadr q))) (pop (cadr q))))
         )
     )
 
 (define (qpeek q)
-    (if (null? (cadr q))
+    (if (equal? (ssize (cadr q)) 0)
         (speek (car q))
-        (qpeek (list (cons (speek (cadr q)) (car q)) (pop (cadr q))))
+        (qpeek (list (push (car q) (speek (cadr q))) (pop (cadr q))))
         )
     )
 
