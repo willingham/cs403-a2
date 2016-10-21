@@ -122,20 +122,19 @@
     )
 
 ;;; quatre
-
-(define (no-locals orig)
-    (define (iter curr params args)
-        (define spot (car curr))
+(define (no-locals locals)
+    (define (iter cur params args)
+        (define spot (car cur))
         (if (list? spot)
             (if (== (car spot) 'define)
                 (if (== (length params) 0)
                     (if (== (length args) 0)
-                        (iter (cdr curr) (list (cadr spot)) (list (caddr spot)))
-                        (iter (cdr curr) (list (cadr spot)) (append args (list (caddr spot))))
+                        (iter (cdr cur) (list (cadr spot)) (list (caddr spot)))
+                        (iter (cdr cur) (list (cadr spot)) (append args (list (caddr spot))))
                     )
                     (if (== (length args) 0)
-                        (iter (cdr curr) (append params (list (cadr spot))) (list (caddr spot)))
-                        (iter (cdr curr) (append params (list (cadr spot))) (append args (list (caddr spot))))
+                        (iter (cdr cur) (append params (list (cadr spot))) (list (caddr spot)))
+                        (iter (cdr cur) (append params (list (cadr spot))) (append args (list (caddr spot))))
                     )
                 )
                 (append (list (list 'lambda params spot)) args)
@@ -143,7 +142,22 @@
             (append (list (list 'lambda params spot)) args)
         )
     )
-    (list (car orig) (cadr orig) (iter (cddr orig) '() '()))
+    (list (car locals) (cadr locals) (iter (cddr locals) '() '()))
+)
+
+(define (no-locals orig)
+    (define (noLocalsIt func args cur)
+        (if (and (list? (car cur)) (== (car (car cur)) 'define))
+            (if (== (length func) 0)
+                (if (== (length args) 0)
+                    (noLocalsIt (list (cadr (car cur))) (list (caddr (car cur))) (cdr cur))
+                    (noLocalsIt (list (cadr (car cur))) (append args (list (caddr (car cur)))) (cdr cur))
+                    )
+                )
+            (append (list (list 'lambda func (car cur))) args)
+            )
+    )
+    (list (car orig) (cadr orig) (noLocalsIt '() '() (cddr orig)))
 )
 
 (define (run4)
@@ -174,7 +188,13 @@
             )
         )
     )
-        
+       
+(define (run5)
+    (define three (lambda (f) (lambda (x) (f (f (f x))))))
+    (inspect (define two (pred three)))
+    (exprTest ((two (lambda (z) (+ 1 z))) 0) 2)
+    )
+
 ;;; six
 
 (define (treeNode value left right)
@@ -269,8 +289,6 @@
   )
 
 
-(define (run5)
-  )
 
 (define (run6)
   )
