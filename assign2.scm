@@ -233,12 +233,25 @@
 
 ;;; huit
 
-(define (cxr x)
-    (lambda (y)
+(define (cxr # x)
+    (define (cxrIter s)
+        (if (equal? s "")
+            'x
+            (if (equal? (car s) "a")
+                (cons 'car (list (cxrIter (cdr s))))
+                (cons 'cdr (list (cxrIter (cdr s))))
+                )
+            )
         )
+    (eval (list 'lambda '(x) (cxrIter (string x))) #)
+    )
+
+(define (run8)
+    (inspect ((cxr 'adadd) (cons 1 (cons 2 (cons (cons 3 (cons 4 5)) 6)))))
     )
 
 ;;; neuf
+(include "table.scm")
 
 (define old+ +)
     (define old- -)
@@ -251,8 +264,13 @@
         (set! * (lambda (a b) (apply-generic '* a b)))
         (set! / (lambda (a b) (apply-generic '/ a b)))
         (putTable '+ '(STRING STRING) addStrings)
+        (putTable '+ '(STRING INTEGER) addStringInteger)
+        (putTable '+ '(INTEGER STRING) addIntegerString)
+        (putTable '- '(INTEGER STRING) subIntegerString)
+        (putTable '- '(STRING INTEGER) subStringInteger)
         (putTable '* '(STRING INTEGER) mulStringInteger)
-        ;other functions installed here
+        (putTable '* '(INTEGER STRING) mulIntegerString)
+        (putTable '/ '(INTEGER STRING) divIntegerString)
         'generic-system-installed
         )
 
@@ -314,8 +332,6 @@
 (define (run7)
   )
 
-(define (run8)
-  )
 
 (define (run9)
   )
