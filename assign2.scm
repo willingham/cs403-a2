@@ -362,10 +362,19 @@
 ;;; dix
 
 (define (install-coercion)
-    
-	)
+    (clearTable)
+    (putTable 'coerce '(REAL) real)
+    (putTable 'coerce '(STRING) string)
+    (putTable 'coerce '(INTEGER) int)
+    'generic-system-installed
+    )
 
-(define (coerce n x))
+(define (coerce n x) 
+    (define proc (getTable 'coerce (list x)))
+    (if (not (null? proc))
+        (apply proc (list n))
+        )
+    )
 
 
 (define (run3)
