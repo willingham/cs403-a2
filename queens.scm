@@ -80,3 +80,4 @@
 (inspect (queens 2))
 (inspect (queens 3))
 (inspect (queens 4))
+(inspect (length (queens 8)))
