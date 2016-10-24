@@ -254,28 +254,70 @@
 (include "table.scm")
 
 (define old+ +)
-    (define old- -)
-    (define old* *)
-    (define old/ /)
-    (define (install-generic)
-        (clearTable)
-        (set! + (lambda (a b) (apply-generic '+ a b)))
-        (set! - (lambda (a b) (apply-generic '- a b)))
-        (set! * (lambda (a b) (apply-generic '* a b)))
-        (set! / (lambda (a b) (apply-generic '/ a b)))
-        (putTable '+ '(STRING STRING) addStrings)
-        (putTable '+ '(STRING INTEGER) addStringInteger)
-        (putTable '+ '(INTEGER STRING) addIntegerString)
-        (putTable '- '(INTEGER STRING) subIntegerString)
-        (putTable '- '(STRING INTEGER) subStringInteger)
-        (putTable '* '(STRING INTEGER) mulStringInteger)
-        (putTable '* '(INTEGER STRING) mulIntegerString)
-        (putTable '/ '(INTEGER STRING) divIntegerString)
-        'generic-system-installed
-        )
-
+(define old- -)
+(define old* *)
+(define old/ /)
 (define (install-generic)
-	)
+    (clearTable)
+    (set! + (lambda (a b) (apply-generic '+ a b)))
+    (set! - (lambda (a b) (apply-generic '- a b)))
+    (set! * (lambda (a b) (apply-generic '* a b)))
+    (set! / (lambda (a b) (apply-generic '/ a b)))
+    (putTable '+ '(STRING STRING) addStrings)
+    (putTable '+ '(STRING INTEGER) addStringInteger)
+    (putTable '+ '(INTEGER STRING) addIntegerString)
+    (putTable '- '(INTEGER STRING) subIntegerString)
+    (putTable '- '(STRING INTEGER) subStringInteger)
+    (putTable '* '(STRING INTEGER) mulStringInteger)
+    (putTable '* '(INTEGER STRING) mulIntegerString)
+    (putTable '/ '(INTEGER STRING) divIntegerString)
+    'generic-system-installed
+    )
+
+(define (addStrings s1 s2)
+    (string+ s1 s2)
+    )
+
+(define (addStringInteger s i)
+    (string+ s (string i))
+    )
+
+(define (addIntegerString i s)
+    (+ i (int s))
+    )
+
+(define (subIntegerString i s)
+    (- i (int s))
+    )
+
+(define (subStringInteger s i)
+    (if (= 0 i)
+        s
+        (subStringInteger (cdr s) (- i 1))
+        )
+    )
+
+(define (mulStringInteger s i)
+    (define (it x n)
+        (if (= n 0)
+            x
+            (it (string+ x s) (- n 1))
+            )
+        )
+    (if (= 0 i)
+        ""
+        (it "" i)
+        )
+    )
+
+(define (mulIntegerString i s)
+    (* i (int s))
+    )
+
+(define (divIntegerString i s)
+    (/ i (int s))
+    )
+
 
 (define (uninstall-generic)
         (set! + old+)
@@ -285,7 +327,37 @@
         'generic-system-uninstalled
         )
 
-(define (apply-generic))
+(define (apply-generic op x y)
+  (define args (list x y))
+  (define proc (getTable op (map type args)))
+  (if (not (null? proc))
+      (apply proc args)
+      (cond
+            ((equal? op '+)
+                (apply old+ args))
+            ((equal? op '-)
+                (apply old- args))
+            ((equal? op '*)
+                (apply old* args))
+            ((equal? op '/)
+                (apply old/ args))
+            )
+          )
+      )
+
+(define (run9)
+    (install-generic)
+    (inspect (+ "x" "y"))
+    (inspect (+ "123" 4))
+    (inspect (+ 123 "4"))
+    (inspect (- 123 "4"))
+    (inspect (- "abc" 1))
+    (inspect (* "abc" 3))
+    (inspect (* 3 "33"))
+    (inspect (/ 8 "2"))
+    (uninstall-generic)
+    )
+
 
 ;;; dix
 
@@ -333,8 +405,6 @@
   )
 
 
-(define (run9)
-  )
 
 (define (run10)
   )
