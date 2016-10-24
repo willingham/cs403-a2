@@ -179,10 +179,53 @@
     (list value left right)
     )
 
-(define (treeflatten t))
+(define (treeflatten t)
+    (define (treeIter t depth)
+        (define left (cadr t))
+        (define right (caddr t))
+        (define val (car t))
+        (cond
+            ((and (null? left) (null? right))
+                (list (list depth val)))
+            ((null? left)
+                (treeIter right (+ depth 1)))
+            ((null? right)
+                (treeIter left (+ depth 1)))
+            (else
+                (define lh (treeIter left (+ depth 1)))
+                (define rh (treeIter right (+ depth 1)))
+                (append rh lh)
+                )
+            )
+        )
+    (treeIter t 0)
+    )
 
+(define (accumulate op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+          (accumulate op initial (cdr sequence)))))
 
-(define (treedepth t))
+(define (treedepth t)
+   	(define l (treeflatten t))
+	(define len (length l))
+	(define lam (lambda (x) (car x)))
+	(define m (map lam l))
+	(define a (accumulate + 0 m))
+	(/ a len)
+    )
+
+(define (run6)
+  (define n6 (treeNode 6 nil nil))
+  (define n5 (treeNode 5 nil nil))
+  (define n4 (treeNode 4 nil nil))
+  (define n3 (treeNode 3 n6 n5))
+  (define n2 (treeNode 2 n4 nil))
+  (define n1 (treeNode 1 n2 n3))
+  (inspect (treedepth n1))
+  )
+
 
 ;;; sept
 
@@ -267,9 +310,6 @@
   )
 
 
-
-(define (run6)
-  )
 
 (define (run7)
   )
