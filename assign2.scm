@@ -167,17 +167,12 @@
     (popper (car data))
     (dequeuer (cadr data))
     (setPort oldstream)
-    (inspect (enqueue (Queue) 1))
+    (println "\n\n new queue\n")
+    
     (define q (dequeue (enqueue (dequeue (enqueue (enqueue (Queue) 1) 2)) 3)))
-    (inspect q)
-    (inspect (qpeek q))
-    (define q (dequeue q))
-    (inspect q)
+    (exprTest (qpeek q) 3)
     (define q (enqueue q 4))
-    (inspect q)
-    (inspect (qpeek q))
-    (inspect (dequeue q))
-
+    (exprTest q "(( 0) ((4 3) 2))")
   )
 
 
@@ -222,7 +217,9 @@
     )
        
 (define (run5)
-    (define three (lambda (f) (lambda (x) (f (f (f x))))))
+    (define four (lambda (f) (lambda (x) (f (f (f (f x)))))))
+    (inspect (define three (pred four)))
+    (exprTest ((three (lambda (z) (+ 1 z))) 0) 3)
     (inspect (define two (pred three)))
     (exprTest ((two (lambda (z) (+ 1 z))) 0) 2)
     )
@@ -271,13 +268,20 @@
     )
 
 (define (run6)
+  (define n7 (treeNode 7 nil nil))
   (define n6 (treeNode 6 nil nil))
-  (define n5 (treeNode 5 nil nil))
-  (define n4 (treeNode 4 nil nil))
+  (define n5 (treeNode 5 n7 n7))
+  (define n4 (treeNode 4 n7 n7))
   (define n3 (treeNode 3 n6 n5))
-  (define n2 (treeNode 2 n4 nil))
+  (define n2 (treeNode 2 n4 n3))
   (define n1 (treeNode 1 n2 n3))
-  (inspect (treedepth n1))
+  (inspect (define l (treeflatten n1)))
+  (inspect (define len (length l)))
+  (inspect (define lam (lambda (x) (car x))))
+  (inspect (define m (map lam l)))
+  (inspect (define a (accumulate + 0 m)))
+  (inspect (/ a len))
+  (exprTest (treedepth n1) 3)
   )
 
 
@@ -359,10 +363,10 @@
     )
 
 (define (run7)
-	(inspect (queens 1))
-	(inspect (queens 2))
-	(inspect (queens 3))
-	(inspect (queens 4))
+	(exprTest (queens 1) "(((0 . 0)))")
+	(exprTest (queens 2) "nil")
+	(exprTest (queens 3) "nil")
+	(exprTest (queens 4) "(((3 . 2) (2 . 0) (1 . 3) (0 . 1)) ((3 . 1) (2 . 3) (1 . 0) (0 . 2)))")
 	)
 
 ;;; huit
@@ -381,7 +385,7 @@
     )
 
 (define (run8)
-    (inspect ((cxr 'adadd) (cons 1 (cons 2 (cons (cons 3 (cons 4 5)) 6)))))
+    (exprTest ((cxr 'adadd) (cons 1 (cons 2 (cons (cons 3 (cons 4 5)) 6)))) 4)
     )
 
 ;;; neuf
