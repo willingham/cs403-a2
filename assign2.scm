@@ -121,6 +121,39 @@
     (+ (ssize (car q)) (ssize (cadr q)))
     )
 
+(define (run3)
+    (define (loop stack queue)
+        (define x (readInt))
+        (if (eof?)
+            (list stack queue)
+            (loop (push stack x) (enqueue queue x))
+            )
+        )
+    (define (popper s)
+        (cond
+            ((!= (ssize s) 0)
+                (inspect (speek s))
+                (popper (pop s))
+                )
+            )
+        )
+    (define (dequeuer q)
+        (cond
+            ((!= (qsize q) 0)
+                (inspect (qpeek q))
+                (dequeuer (dequeue q))
+                )
+            )
+        )
+
+    (define oldstream (setPort (open "data.ints" 'read)))
+    (define data (loop (Stack) (Queue)))
+    (popper (car data))
+    (dequeuer (cadr data))
+    (setPort oldstream)
+  )
+
+
 ;;; quatre
 
 (define (no-locals orig)
@@ -456,40 +489,10 @@
         )
     )
 
-
-(define (run3)
-    (define (loop stack queue)
-        (define x (readInt))
-        (if (eof?)
-            (list stack queue)
-            (loop (push stack x) (enqueue queue x))
-            )
-        )
-    (define (popper s)
-        (cond
-            ((!= (ssize s) 0)
-                (inspect (speek s))
-                (popper (pop s))
-                )
-            )
-        )
-    (define (dequeuer q)
-        (cond
-            ((!= (qsize q) 0)
-                (inspect (qpeek q))
-                (dequeuer (dequeue q))
-                )
-            )
-        )
-
-    (define oldstream (setPort (open "data.ints" 'read)))
-    (define data (loop (Stack) (Queue)))
-    (popper (car data))
-    (dequeuer (cadr data))
-    (setPort oldstream)
-  )
-
 (define (run10)
-  )
+  	(coerce "123.4" 'INTEGER)
+	(coerce '(1 (2.2) ((3 4) "5")) 'STRING)
+	(type (coerce '(1 (2.2) ((3 4) "5")) 'STRING))
+	)
 
 (println "assignment 2 loaded!")
