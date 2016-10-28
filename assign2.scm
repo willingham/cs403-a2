@@ -490,9 +490,10 @@
     )
 
 (define (run10)
-  	(coerce "123.4" 'INTEGER)
-	(coerce '(1 (2.2) ((3 4) "5")) 'STRING)
-	(type (coerce '(1 (2.2) ((3 4) "5")) 'STRING))
+    (install-coercion)
+  	(exprTest (coerce "123.4" 'INTEGER) 123)
+	(exprTest (coerce '(1 (2.2) ((3 4) "5")) 'STRING) '(1 (2.2) ((3 4) "5")))
+	(exprTest (type (coerce '(1 (2.2) ((3 4) "5")) 'STRING)) "STRING")
 	)
 
 (println "assignment 2 loaded!")
