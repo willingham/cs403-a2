@@ -1,13 +1,13 @@
-(define (make-position row col)
-   (cons row col))
+(define (newPosition r c)
+   (cons r c))
 
-(define (position-row position)
-   (car position))
+(define (getRow pos)
+   (car pos))
 
-(define (position-col position)
-   (cdr position))
+(define (getCol pos)
+   (cdr pos))
 
-(define empty-board nil)
+(define newBoard nil)
 
 (define (filter pred lst)
   (cond ((null? lst) nil)
@@ -24,56 +24,54 @@
 (define (flatmap proc seq)
    (accumulate append nil (map proc seq)))
 
-;;----------------------------------------------------
-
-(define (list-ref items n)
-  (if (= n 0)
-      (car items)
-      (list-ref (cdr items) (- n 1))))
-
 (define (enumerate-interval low high)
   (if (> low high)
       nil
       (cons low (enumerate-interval (+ low 1) high))))
-(define (adjoin-position row col positions)
-   (append (list (make-position row col)) positions))
+
+(define (addPosition row col positions)
+   (append (list (newPosition row col)) positions))
 
 (define (safe? col positions)
     (let (
-          (kth-queen 
+          (cur 
                 (car  positions ))
-          (other-queens 
-                (filter (lambda (q) (not (= col (position-row q)))) positions)))
-   (define (attacks? q1 q2)
-     (or (= (position-col q1) (position-col q2))
-         (= (abs (- (position-row q1) (position-row q2)))
-            (abs (- (position-col q1) (position-col q2))))))
+          (others 
+                (filter (lambda (q) (not (= col (getRow q)))) positions)))
+    (define (attacks? q1 q2)
+        (or (= (getCol q1) (getCol q2))
+            (= (abs (- (getRow q1) (getRow q2)))
+                (abs (- (getCol q1) (getCol q2))))))
 
    (define (iter q board)
-     (or (null? board)
-         (and (not (attacks? q (car board)))
-              (iter q (cdr board)))))
-   (iter kth-queen other-queens)))
+        (or (null? board)
+            (and (not (attacks? q (car board)))
+                (iter q (cdr board))
+                )
+            )
+        )
+    (iter cur others))
+    )
 
-(define (queens board-size)
-   (define (queen-cols k) 
-     	(if (= k -1)
-         	(list empty-board)
+(define (queens size)
+   (define (getPostitions n) 
+     	(if (= n -1)
+         	(list newBoard)
          	(filter
-          		(lambda (positions) (safe? k positions))
+          		(lambda (positions) (safe? n positions))
           		(flatmap
-           		    (lambda (rest-of-queens)
-             	        (map (lambda (new-row)
-                            (adjoin-position k new-row rest-of-queens))
-                            (enumerate-interval 0 (- board-size 1))
+           		    (lambda (otherQueens)
+             	        (map (lambda (newRow)
+                            (addPosition n newRow otherQueens))
+                            (enumerate-interval 0 (- size 1))
                             )
                         )
-                    (queen-cols (- k 1))
+                    (getPostitions (- n 1))
                     )
                 )
 		    )
 	    )
-    (queen-cols (- board-size 1))
+    (getPostitions (- size 1))
 	)
 
 (inspect (queens 1))
