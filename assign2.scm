@@ -104,16 +104,32 @@
     )
 
 (define (dequeue q)
-    (if (null? (car (cadr q)))
+    (define (moveAll r)
+        (if (equal? (ssize (cadr r)) 0)
+            r
+            (moveAll (list (push (car r) (speek (cadr r))) (pop (cadr r))))
+            )
+        )
+    (define (getDequeue r)
+        (define r (moveAll r))
+        (list (pop (car r)) (cadr r))
+        )
+    (if (equal? (ssize (car q)) 0)
+        (getDequeue q)
         (list (pop (car q)) (cadr q))
-        (dequeue (list (push (car q) (speek (cadr q))) (pop (cadr q))))
         )
     )
 
 (define (qpeek q)
-    (if (equal? (ssize (cadr q)) 0)
+    (define (moveAll r)
+        (if (equal? (ssize (cadr r)) 0)
+            r
+            (moveAll (list (push (car r) (speek (cadr r))) (pop (cadr r))))
+            )
+        )
+    (if (equal? (ssize (car q)) 0)
+        (speek (car (moveAll q)))
         (speek (car q))
-        (qpeek (list (push (car q) (speek (cadr q))) (pop (cadr q))))
         )
     )
 
@@ -151,6 +167,17 @@
     (popper (car data))
     (dequeuer (cadr data))
     (setPort oldstream)
+    (inspect (enqueue (Queue) 1))
+    (define q (dequeue (enqueue (dequeue (enqueue (enqueue (Queue) 1) 2)) 3)))
+    (inspect q)
+    (inspect (qpeek q))
+    (define q (dequeue q))
+    (inspect q)
+    (define q (enqueue q 4))
+    (inspect q)
+    (inspect (qpeek q))
+    (inspect (dequeue q))
+
   )
 
 
@@ -177,24 +204,18 @@
 
 ;;; cinq
 
-(define prefn
-    (lambda (f)
-        (lambda (p)
-            (cons #f
-                  (if (car p)
-                        (cdr p)
-                        (f (cdr p))
-                        )
-                  )
-            )
-        )
-    )
-
 (define pred
     (lambda (n)
         (lambda (f)
-            (lambda (x) 
-                (cdr ((n (prefn f)) (cons #t x)))
+            (lambda (x)
+                (((n (lambda (g)
+                        (lambda (h)
+                            (h (g f))
+                            )
+                        ))
+                   (lambda (u) x))
+                   (lambda (u) u)
+                   )
                 )
             )
         )
